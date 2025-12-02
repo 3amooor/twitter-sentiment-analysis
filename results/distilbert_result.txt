@@ -1,0 +1,1 @@
+Final Val Loss: 0.4534, Val Accuracy: 0.8488

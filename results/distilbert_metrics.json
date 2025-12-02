@@ -1,0 +1,6 @@
+{
+  "val_loss": 0.4534372665801702,
+  "val_accuracy": 0.8488317600589141,
+  "model_name": "distilbert-base-uncased",
+  "framework": "pytorch"
+}

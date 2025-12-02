@@ -1,0 +1,2 @@
+LSTM - Test Accuracy: 0.8610, Test Loss: 0.5129
+CNN  - Test Accuracy: 0.8700, Test Loss: 0.6017
