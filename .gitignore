@@ -1,0 +1,7 @@
+models/
+
+*.pt
+*.h5
+*.bin
+*.pkl
+*.joblib

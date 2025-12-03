@@ -76,32 +76,52 @@ def load_models() -> Dict[str, Any]:
         models['label_encoder'] = joblib.load('models/label_encoder.pkl')
         
         # Try to load LSTM if available
+        lstm_loaded = False
         if os.path.exists('models/lstm_model.h5'):
             try:
                 from tensorflow.keras.models import load_model
                 models['lstm'] = load_model('models/lstm_model.h5')
-                if os.path.exists('models/lstm_tokenizer.pkl'):
-                    models['lstm_tokenizer'] = joblib.load('models/lstm_tokenizer.pkl')
-                if os.path.exists('models/lstm_maxlen.pkl'):
-                    models['lstm_maxlen'] = joblib.load('models/lstm_maxlen.pkl')
+                # Use the common tokenizer.pkl if available
+                if os.path.exists('models/tokenizer.pkl'):
+                    models['lstm_tokenizer'] = joblib.load('models/tokenizer.pkl')
+                    # Set default maxlen
+                    models['lstm_maxlen'] = 100
+                    if os.path.exists('models/maxlen.pkl'):
+                        models['lstm_maxlen'] = joblib.load('models/maxlen.pkl')
+                    st.success("LSTM model loaded successfully")
+                    lstm_loaded = True
+                else:
+                    st.warning("Tokenizer not found at 'models/tokenizer.pkl'. LSTM model will not be available.")
             except ImportError:
                 st.warning("TensorFlow is not installed. LSTM model will not be available.")
             except Exception as e:
-                st.warning(f"Error loading LSTM model: {str(e)}")
+                st.error(f"Error loading LSTM model: {str(e)}")
+        else:
+            st.warning("LSTM model file not found at 'models/lstm_model.h5'")
         
         # Try to load CNN if available
+        cnn_loaded = False
         if os.path.exists('models/cnn_model.h5'):
             try:
                 from tensorflow.keras.models import load_model
                 models['cnn'] = load_model('models/cnn_model.h5')
-                if os.path.exists('models/cnn_tokenizer.pkl'):
-                    models['cnn_tokenizer'] = joblib.load('models/cnn_tokenizer.pkl')
-                if os.path.exists('models/cnn_maxlen.pkl'):
-                    models['cnn_maxlen'] = joblib.load('models/cnn_maxlen.pkl')
+                # Use the common tokenizer.pkl if available
+                if os.path.exists('models/tokenizer.pkl'):
+                    models['cnn_tokenizer'] = joblib.load('models/tokenizer.pkl')
+                    # Set default maxlen
+                    models['cnn_maxlen'] = 100
+                    if os.path.exists('models/maxlen.pkl'):
+                        models['cnn_maxlen'] = joblib.load('models/maxlen.pkl')
+                    st.success("CNN model loaded successfully")
+                    cnn_loaded = True
+                else:
+                    st.warning("Tokenizer not found at 'models/tokenizer.pkl'. CNN model will not be available.")
             except ImportError:
                 st.warning("TensorFlow is not installed. CNN model will not be available.")
             except Exception as e:
-                st.warning(f"Error loading CNN model: {str(e)}")
+                st.error(f"Error loading CNN model: {str(e)}")
+        else:
+            st.warning("CNN model file not found at 'models/cnn_model.h5'")
         
         # Load DistilBERT if available
         if os.path.exists('models/distilbert_pt'):
@@ -292,7 +312,7 @@ def main():
     
     # Sidebar
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Home", "Model Comparison", "Real-time Analysis", "Visualizations"])
+    page = st.sidebar.radio("Go to", ["Home", "Real-time Analysis", "Visualizations"])
     
     if page == "Home":
         st.header("Welcome to the Sentiment Analysis Dashboard")
@@ -301,7 +321,6 @@ def main():
         
         ### Features:
         - 🏠 **Home**: Overview and quick analysis
-        - 📊 **Model Comparison**: Compare performance of different models
         - 🔍 **Real-time Analysis**: Analyze sentiment of custom text
         - 📈 **Visualizations**: Explore data and model insights
         """)
@@ -335,67 +354,7 @@ def main():
                         st.warning("No models available for prediction.")
             else:
                 st.warning("Please enter some text to analyze.")
-    
-    elif page == "Model Comparison":
-        st.header("Model Comparison")
-        
-        if 'metrics' in models or 'distilbert_metrics' in models:
-            cols = st.columns(2)
-            
-            with cols[0]:
-                st.subheader("Traditional Models")
-                if 'metrics' in models:
-                    metrics = models['metrics']
-                    if isinstance(metrics, list):
-                        metrics = metrics[-1]
-                    
-                    model_names = list(metrics.get('models', {}).keys())
-                    model_acc = [m.get('accuracy', 0) for m in metrics.get('models', {}).values()]
-                    
-                    if model_names:
-                        fig, ax = plt.subplots()
-                        ax.bar(model_names, model_acc)
-                        ax.set_ylim(0, 1)
-                        ax.set_ylabel('Accuracy')
-                        ax.set_title('Model Accuracy Comparison')
-                        st.pyplot(fig)
-                    else:
-                        st.warning("No traditional model metrics available.")
-                else:
-                    st.warning("No metrics available for traditional models.")
-            
-            with cols[1]:
-                st.subheader("Deep Learning Models")
-                dl_metrics = {}
-                if 'lstm' in models and 'metrics' in models:
-                    metrics = models['metrics']
-                    if isinstance(metrics, list):
-                        metrics = metrics[-1]
-                    dl_metrics['LSTM'] = metrics.get('models', {}).get('LSTM', {})
-                
-                if 'cnn' in models and 'metrics' in models:
-                    metrics = models['metrics']
-                    if isinstance(metrics, list):
-                        metrics = metrics[-1]
-                    dl_metrics['CNN'] = metrics.get('models', {}).get('CNN', {})
-                
-                if 'distilbert_metrics' in models:
-                    dl_metrics['DistilBERT'] = models['distilbert_metrics']
-                
-                if dl_metrics:
-                    model_names = list(dl_metrics.keys())
-                    accuracies = [m.get('val_accuracy', m.get('accuracy', 0)) for m in dl_metrics.values()]
-                    
-                    fig, ax = plt.subplots()
-                    ax.bar(model_names, accuracies)
-                    ax.set_ylim(0, 1)
-                    ax.set_ylabel('Validation Accuracy')
-                    ax.set_title('Deep Learning Models Accuracy')
-                    st.pyplot(fig)
-                else:
-                    st.warning("No metrics available for deep learning models.")
-        else:
-            st.warning("No model metrics available. Please train the models first.")
+
     
     elif page == "Real-time Analysis":
         st.header("Real-time Sentiment Analysis")
