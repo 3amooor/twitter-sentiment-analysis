@@ -94,29 +94,9 @@ python step2_eda.py
 streamlit run app.py
 ```
 
-## 📊 Model Comparison
-
-The project includes multiple models with their respective performance metrics:
-
-## 📊 Model Performance
-
-| Model | Accuracy | Precision | Recall | F1-Score |
-|-------|----------|-----------|--------|----------|
-| **Traditional Models** | | | |
-| Logistic Regression | 0.6831 | 0.6824 | 0.6831 | 0.6791 |
-| Random Forest | 0.5672 | 0.6005 | 0.5672 | 0.5753 |
-| Linear SVM | 0.6982 | 0.6990 | 0.6982 | 0.6980 |
-| **Deep Learning** | | | |
-| LSTM | 0.8658 | - | - | - |
-| CNN | 0.8715 | - | - | - |
-| **Transformer** | | | |
-| DistilBERT | 0.8488 | - | - | - |
-
-*Note: All metrics are on the test set. Loss values: LSTM (0.6007), CNN (0.5719), DistilBERT (0.4534).*
 
 ## 🤖 Technologies Used
 
-- **Python 3.8+**
 - **Machine Learning**: scikit-learn, TensorFlow/Keras, Transformers
 - **NLP**: NLTK, spaCy, Gensim
 - **Visualization**: Matplotlib, Seaborn, Plotly, WordCloud
@@ -127,11 +107,5 @@ The project includes multiple models with their respective performance metrics:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- [Hugging Face](https://huggingface.co/) for the Transformers library
-- [Streamlit](https://streamlit.io/) for the web framework
-- [scikit-learn](https://scikit-learn.org/) for machine learning tools
-- [NLTK](https://www.nltk.org/) for natural language processing
 
 
